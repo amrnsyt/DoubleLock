@@ -16,6 +16,8 @@ sealed interface UiState {
     data class Success(
         val enabled: Boolean,
         val speed: TapSpeed,
+        val animation: LockAnimation,
+        val durationMs: Int,
         val serviceConnected: Boolean
     ) : UiState
 }
@@ -27,12 +29,18 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val uiState: StateFlow<UiState> = combine(
         store.enabled,
         store.speed,
+        store.animation,
+        store.durationMs,
         LockAccessibilityService.connected
-    ) { enabled, speed, connected ->
-        UiState.Success(enabled, speed, connected)
+    ) { enabled, speed, animation, durationMs, connected ->
+        UiState.Success(enabled, speed, animation, durationMs, connected)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), UiState.Loading)
 
     fun setEnabled(value: Boolean) = store.setEnabled(value)
 
     fun setSpeed(value: TapSpeed) = store.setSpeed(value)
+
+    fun setAnimation(value: LockAnimation) = store.setAnimation(value)
+
+    fun setDurationMs(value: Int) = store.setDurationMs(value)
 }

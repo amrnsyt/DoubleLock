@@ -12,6 +12,14 @@ enum class TapSpeed(val label: String, val windowMs: Long) {
     SLOW("Slow", 500L)
 }
 
+enum class LockAnimation(val label: String) {
+    NONE("None (instant lock)"),
+    CRT("CRT TV off"),
+    FADE("Fade to black"),
+    CIRCLE("Circle collapse"),
+    CURTAIN("Curtain slides down")
+}
+
 class SettingsStore private constructor(context: Context) {
 
     private val prefs = context.applicationContext
@@ -26,6 +34,17 @@ class SettingsStore private constructor(context: Context) {
     )
     val speed: StateFlow<TapSpeed> = _speed.asStateFlow()
 
+    private val _animation = MutableStateFlow(
+        LockAnimation.entries.firstOrNull { it.name == prefs.getString(KEY_ANIMATION, null) }
+            ?: LockAnimation.CRT
+    )
+    val animation: StateFlow<LockAnimation> = _animation.asStateFlow()
+
+    private val _durationMs = MutableStateFlow(
+        prefs.getInt(KEY_DURATION, DEFAULT_DURATION_MS).coerceIn(MIN_DURATION_MS, MAX_DURATION_MS)
+    )
+    val durationMs: StateFlow<Int> = _durationMs.asStateFlow()
+
     fun setEnabled(value: Boolean) {
         prefs.edit().putBoolean(KEY_ENABLED, value).apply()
         _enabled.value = value
@@ -34,6 +53,17 @@ class SettingsStore private constructor(context: Context) {
     fun setSpeed(value: TapSpeed) {
         prefs.edit().putString(KEY_SPEED, value.name).apply()
         _speed.value = value
+    }
+
+    fun setAnimation(value: LockAnimation) {
+        prefs.edit().putString(KEY_ANIMATION, value.name).apply()
+        _animation.value = value
+    }
+
+    fun setDurationMs(value: Int) {
+        val safe = value.coerceIn(MIN_DURATION_MS, MAX_DURATION_MS)
+        prefs.edit().putInt(KEY_DURATION, safe).apply()
+        _durationMs.value = safe
     }
 
     /** Records a tap. Returns true when it completes a double-tap. */
@@ -47,8 +77,14 @@ class SettingsStore private constructor(context: Context) {
     }
 
     companion object {
+        const val MIN_DURATION_MS = 200
+        const val MAX_DURATION_MS = 800
+        const val DEFAULT_DURATION_MS = 400
+
         private const val KEY_ENABLED = "enabled"
         private const val KEY_SPEED = "speed"
+        private const val KEY_ANIMATION = "animation"
+        private const val KEY_DURATION = "duration_ms"
         private const val KEY_LAST_TAP = "last_tap"
 
         @Volatile

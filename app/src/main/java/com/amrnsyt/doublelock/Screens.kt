@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -15,14 +16,22 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,9 +39,16 @@ fun SettingsScreen(
     state: UiState.Success,
     onToggle: (Boolean) -> Unit,
     onSpeed: (TapSpeed) -> Unit,
+    onAnimation: (LockAnimation) -> Unit,
+    onDuration: (Int) -> Unit,
     onOpenAccessibility: () -> Unit,
     onAddWidget: () -> Unit
 ) {
+    var sliderValue by remember(state.durationMs) {
+        mutableFloatStateOf(state.durationMs.toFloat())
+    }
+    val animationOn = state.animation != LockAnimation.NONE
+
     Scaffold(
         topBar = { CenterAlignedTopAppBar(title = { Text("DoubleLock") }) }
     ) { padding ->
@@ -63,6 +79,50 @@ fun SettingsScreen(
                     )
                 }
             }
+
+            HorizontalDivider()
+
+            Text("Lock animation", style = MaterialTheme.typography.titleMedium)
+            Column {
+                LockAnimation.entries.forEach { option ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = state.animation == option,
+                                onClick = { onAnimation(option) },
+                                role = Role.RadioButton
+                            )
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(selected = state.animation == option, onClick = null)
+                        Text(
+                            text = option.label,
+                            modifier = Modifier.padding(start = 12.dp),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+            }
+
+            Text(
+                text = "Animation length: ${sliderValue.roundToInt()} ms",
+                style = MaterialTheme.typography.titleSmall
+            )
+            Slider(
+                value = sliderValue,
+                onValueChange = { sliderValue = it },
+                onValueChangeFinished = { onDuration(sliderValue.roundToInt()) },
+                valueRange = SettingsStore.MIN_DURATION_MS.toFloat()..
+                    SettingsStore.MAX_DURATION_MS.toFloat(),
+                steps = 11,
+                enabled = animationOn
+            )
+            Text(
+                text = "The circle collapses toward the center of your pad widget.",
+                style = MaterialTheme.typography.bodySmall
+            )
 
             HorizontalDivider()
 
@@ -97,9 +157,11 @@ fun SettingsScreen(
 private fun SettingsScreenPreview() {
     MaterialTheme {
         SettingsScreen(
-            state = UiState.Success(true, TapSpeed.NORMAL, true),
+            state = UiState.Success(true, TapSpeed.NORMAL, LockAnimation.CRT, 400, true),
             onToggle = {},
             onSpeed = {},
+            onAnimation = {},
+            onDuration = {},
             onOpenAccessibility = {},
             onAddWidget = {}
         )

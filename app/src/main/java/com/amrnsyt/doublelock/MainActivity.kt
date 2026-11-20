@@ -29,6 +29,8 @@ class MainActivity : ComponentActivity() {
                         state = state,
                         onToggle = vm::setEnabled,
                         onSpeed = vm::setSpeed,
+                        onAnimation = vm::setAnimation,
+                        onDuration = vm::setDurationMs,
                         onOpenAccessibility = ::openAccessibilitySettings,
                         onAddWidget = ::requestPinWidget
                     )

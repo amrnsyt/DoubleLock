@@ -18,7 +18,14 @@ class WidgetTapReceiver : BroadcastReceiver() {
         context.getSystemService(Vibrator::class.java)
             ?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK))
 
-        if (!LockAccessibilityService.lockScreen()) {
+        val bounds = intent.sourceBounds
+        val locked = LockAccessibilityService.lockWithAnimation(
+            animation = store.animation.value,
+            durationMs = store.durationMs.value.toLong(),
+            tapX = bounds?.exactCenterX(),
+            tapY = bounds?.exactCenterY()
+        )
+        if (!locked) {
             Toast.makeText(
                 context,
                 "Enable the DoubleLock accessibility service first",
