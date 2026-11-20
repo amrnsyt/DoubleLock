@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">DoubleLock</string>
     <string name="tile_label">Double-tap lock</string>
-    <string name="a11y_description">Locks the screen when you double-tap the blank area of the DoubleLock home screen. It does not read or collect any screen content.</string>
+    <string name="widget_label">Double-tap lock pad</string>
+    <string name="widget_description">Invisible pad. Double-tap it on a blank home screen to lock the phone.</string>
+    <string name="a11y_description">Locks the screen when you double-tap the DoubleLock pad widget. It does not read or collect any screen content.</string>
 </resources>
