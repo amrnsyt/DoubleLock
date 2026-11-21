@@ -11,25 +11,41 @@ class WidgetTapReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != ACTION_TAP) return
+
         val store = SettingsStore.get(context)
         if (!store.enabled.value) return
         if (!store.registerTap()) return
 
         context.getSystemService(Vibrator::class.java)
-            ?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK))
+            ?.vibrate(
+                VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
+            )
 
         val bounds = intent.sourceBounds
-        val locked = LockAccessibilityService.lockWithAnimation(
-            animation = store.animation.value,
-            durationMs = store.durationMs.value.toLong(),
-            tapX = bounds?.exactCenterX(),
-            tapY = bounds?.exactCenterY()
-        )
+        val animation = store.animation.value
+
+        val locked = if (animation == LockAnimation.NONE) {
+            DeviceAdminManager.lockNow(context) ||
+                LockAccessibilityService.lockWithAnimation(
+                    LockAnimation.NONE,
+                    store.durationMs.value.toLong(),
+                    bounds?.exactCenterX(),
+                    bounds?.exactCenterY()
+                )
+        } else {
+            LockAccessibilityService.lockWithAnimation(
+                animation,
+                store.durationMs.value.toLong(),
+                bounds?.exactCenterX(),
+                bounds?.exactCenterY()
+            ) || DeviceAdminManager.lockNow(context)
+        }
+
         if (!locked) {
             Toast.makeText(
                 context,
-                "Enable the DoubleLock accessibility service first",
-                Toast.LENGTH_SHORT
+                "Activate Device Administrator or Accessibility in DoubleLock settings",
+                Toast.LENGTH_LONG
             ).show()
         }
     }
