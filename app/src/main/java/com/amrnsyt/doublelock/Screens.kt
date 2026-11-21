@@ -42,19 +42,15 @@ fun SettingsScreen(
     onAnimation: (LockAnimation) -> Unit,
     onDuration: (Int) -> Unit,
     onOpenAccessibility: () -> Unit,
-    onActivateDeviceAdmin: () -> Unit,
     onAddWidget: () -> Unit
 ) {
     var sliderValue by remember(state.durationMs) {
         mutableFloatStateOf(state.durationMs.toFloat())
     }
-
     val animationOn = state.animation != LockAnimation.NONE
 
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(title = { Text("DoubleLock") })
-        }
+        topBar = { CenterAlignedTopAppBar(title = { Text("DoubleLock") }) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -69,21 +65,11 @@ fun SettingsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    "Lock on double-tap",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Switch(
-                    checked = state.enabled,
-                    onCheckedChange = onToggle
-                )
+                Text("Lock on double-tap", style = MaterialTheme.typography.titleMedium)
+                Switch(checked = state.enabled, onCheckedChange = onToggle)
             }
 
-            Text(
-                "Double-tap speed",
-                style = MaterialTheme.typography.titleMedium
-            )
-
+            Text("Double-tap speed", style = MaterialTheme.typography.titleMedium)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 TapSpeed.entries.forEach { speed ->
                     FilterChip(
@@ -96,11 +82,7 @@ fun SettingsScreen(
 
             HorizontalDivider()
 
-            Text(
-                "Lock animation",
-                style = MaterialTheme.typography.titleMedium
-            )
-
+            Text("Lock animation", style = MaterialTheme.typography.titleMedium)
             Column {
                 LockAnimation.entries.forEach { option ->
                     Row(
@@ -114,10 +96,7 @@ fun SettingsScreen(
                             .padding(vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        RadioButton(
-                            selected = state.animation == option,
-                            onClick = null
-                        )
+                        RadioButton(selected = state.animation == option, onClick = null)
                         Text(
                             text = option.label,
                             modifier = Modifier.padding(start = 12.dp),
@@ -131,19 +110,15 @@ fun SettingsScreen(
                 text = "Animation length: ${sliderValue.roundToInt()} ms",
                 style = MaterialTheme.typography.titleSmall
             )
-
             Slider(
                 value = sliderValue,
                 onValueChange = { sliderValue = it },
-                onValueChangeFinished = {
-                    onDuration(sliderValue.roundToInt())
-                },
+                onValueChangeFinished = { onDuration(sliderValue.roundToInt()) },
                 valueRange = SettingsStore.MIN_DURATION_MS.toFloat()..
                     SettingsStore.MAX_DURATION_MS.toFloat(),
                 steps = 11,
                 enabled = animationOn
             )
-
             Text(
                 text = "The circle collapses toward the center of your pad widget.",
                 style = MaterialTheme.typography.bodySmall
@@ -152,73 +127,22 @@ fun SettingsScreen(
             HorizontalDivider()
 
             Text(
-                "Screen locking permission",
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            Text(
-                "Device Administrator: " +
-                    if (state.adminActive) "Active" else "Not active",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            OutlinedButton(
-                onClick = onActivateDeviceAdmin,
-                enabled = !state.adminActive
-            ) {
-                Text(
-                    if (state.adminActive) {
-                        "Device Administrator activated"
-                    } else {
-                        "Activate Device Administrator"
-                    }
-                )
-            }
-
-            Text(
-                "Device Administrator allows DoubleLock to lock your screen " +
-                    "without enabling Accessibility.",
-                style = MaterialTheme.typography.bodySmall
-            )
-
-            HorizontalDivider()
-
-            Text(
-                "Optional: Accessibility for animations",
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            Text(
-                "Accessibility is only needed for the custom screen-lock animations. " +
-                    "If it is off, DoubleLock can still lock instantly when Device Administrator is active.",
-                style = MaterialTheme.typography.bodySmall
-            )
-
-            Text(
-                "Accessibility service: " +
+                text = "Step 1: accessibility service is " +
                     if (state.serviceConnected) "Active" else "Off",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.titleMedium
             )
-
             OutlinedButton(onClick = onOpenAccessibility) {
                 Text("Open accessibility settings")
             }
 
-            HorizontalDivider()
-
-            Text(
-                "Add the invisible pad",
-                style = MaterialTheme.typography.titleMedium
-            )
-
+            Text("Step 2: add the invisible pad", style = MaterialTheme.typography.titleMedium)
             Button(onClick = onAddWidget) {
                 Text("Add pad widget to home screen")
             }
-
             Text(
-                "Place it on an empty home page and stretch it to cover the blank area. " +
-                    "Double-tap the empty space to lock. You can also add the " +
-                    "\"Double-tap lock\" Quick Settings tile to switch this on or off.",
+                text = "Place it on an empty home page and stretch it to cover the blank area. " +
+                    "Double-tap the empty space to lock. The \"Double-tap lock\" Quick " +
+                    "Settings tile switches locking on or off.",
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -230,20 +154,12 @@ fun SettingsScreen(
 private fun SettingsScreenPreview() {
     MaterialTheme {
         SettingsScreen(
-            state = UiState.Success(
-                true,
-                TapSpeed.NORMAL,
-                LockAnimation.CRT,
-                400,
-                true,
-                false
-            ),
+            state = UiState.Success(true, TapSpeed.NORMAL, LockAnimation.CRT, 400, true),
             onToggle = {},
             onSpeed = {},
             onAnimation = {},
             onDuration = {},
             onOpenAccessibility = {},
-            onActivateDeviceAdmin = {},
             onAddWidget = {}
         )
     }

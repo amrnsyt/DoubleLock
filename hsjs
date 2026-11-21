@@ -1,0 +1,76 @@
+[33mcommit e75d49ed9af9f990a1ad9fa58c3419d3a2d69566[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mbank-compatibility-test[m[33m, [m[1;31morigin/bank-compatibility-test[m[33m)[m
+Author: amrnsyt <anamolousjr93@gmail.com>
+Date:   Sat Nov 21 11:57:51 2026 +0800
+
+    Add Device Administrator screen locking
+
+ app/src/main/AndroidManifest.xml           |  12 [32m++[m
+ .../doublelock/DeviceAdminManager.kt       |  29 [32m++++[m
+ .../DoubleLockDeviceAdminReceiver.kt       |   5 [32m+[m
+ .../amrnsyt/doublelock/HomeViewModel.kt    |  40 [32m+++++[m[31m-[m
+ .../com/amrnsyt/doublelock/MainActivity.kt |  35 [32m+++++[m
+ .../java/com/amrnsyt/doublelock/Screens.kt | 109 [32m++++++++++++++[m[31m--[m
+ .../doublelock/WidgetTapReceiver.kt        |  34 [32m+++[m[31m--[m
+ app/src/main/res/xml/device_admin.xml      |   6 [32m+[m
+ 8 files changed, 243 insertions(+), 27 deletions(-)
+
+[33mcommit 60d829d21465f250b14f494b0cc538675b517aca[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Author: amrnsyt <anamolousjr93@gmail.com>
+Date:   Fri Nov 20 15:43:54 2026 +0800
+
+    Add lock animations (CRT, fade, circle, curtain) with duration slider
+
+ .../amrnsyt/doublelock/HomeViewModel.kt    |  12 [32m+[m[31m-[m
+ .../doublelock/LockAccessibilityService.kt |  94 [32m+++++++++++++[m[31m-[m
+ .../com/amrnsyt/doublelock/LockAnimView.kt | 102 [32m++++++++++++++++[m
+ .../doublelock/LockWidgetProvider.kt       |   3 [32m+[m[31m-[m
+ .../com/amrnsyt/doublelock/MainActivity.kt |   2 [32m+[m
+ .../java/com/amrnsyt/doublelock/Screens.kt |  64 [32m+++++++++[m[31m-[m
+ .../amrnsyt/doublelock/SettingsStore.kt    |  36 [32m++++++[m
+ .../doublelock/WidgetTapReceiver.kt        |   9 [32m+[m[31m-[m
+ 8 files changed, 315 insertions(+), 7 deletions(-)
+
+[33mcommit ecea23b0e88cccd75cf94a75e20510073322fa75[m
+Author: amrnsyt <anamolousjr93@gmail.com>
+Date:   Fri Nov 20 12:56:41 2026 +0800
+
+    Switch to app + transparent widget
+
+ app/src/main/AndroidManifest.xml           |  30 [32m+[m[31m-[m
+ .../amrnsyt/doublelock/HomeViewModel.kt    |  56 [32m+[m[31m---[m
+ .../doublelock/LockWidgetProvider.kt       |  31 [32m++[m
+ .../com/amrnsyt/doublelock/MainActivity.kt |  73 [32m++[m[31m---[m
+ .../java/com/amrnsyt/doublelock/Screens.kt | 235 [32m++[m[31m--------------[m
+ .../amrnsyt/doublelock/SettingsStore.kt    |  12 [32m+[m
+ .../doublelock/WidgetTapReceiver.kt        |  33 [32m+++[m
+ app/src/main/res/layout/widget_blank.xml   |   6 [32m+[m
+ app/src/main/res/values/strings.xml        |   4 [32m+[m[31m-[m
+ app/src/main/res/values/themes.xml         |   4 [32m+[m[31m-[m
+ app/src/main/res/xml/lock_widget_info.xml  |  13 [32m+[m
+ 11 files changed, 167 insertions(+), 330 deletions(-)
+
+[33mcommit 3463e56ac2f2dcbc9852621c51a793b8d81801c4[m
+Author: amrnsyt <anamolousjr93@gmail.com>
+Date:   Fri Nov 20 12:33:10 2026 +0800
+
+    DoubleLock v1
+
+ .github/workflows/build.yml                |  22 [32m++[m
+ .gitignore                                 |   4 [32m+[m
+ app/build.gradle.kts                       |  47 [32m+++[m
+ app/src/main/AndroidManifest.xml           |  64 [32m++++[m
+ .../com/amrnsyt/doublelock/BootReceiver.kt |  19 [32m+[m
+ .../amrnsyt/doublelock/HomeViewModel.kt    |  86 [32m+++++[m
+ .../doublelock/LockAccessibilityService.kt |  38 [32m++[m
+ .../amrnsyt/doublelock/LockTileService.kt  |  28 [32m++[m
+ .../com/amrnsyt/doublelock/MainActivity.kt |  85 [32m+++++[m
+ .../java/com/amrnsyt/doublelock/Screens.kt | 298 [32m++++++++++++++++[m
+ .../amrnsyt/doublelock/SettingsStore.kt    |  50 [32m+++[m
+ .../java/com/amrnsyt/doublelock/Theme.kt   |  24 [32m++[m
+ app/src/main/res/values/strings.xml        |   5 [32m+[m
+ app/src/main/res/values/themes.xml         |   8 [32m+[m
+ .../xml/accessibility_service_config.xml   |   7 [32m+[m
+ build.gradle.kts                           |   5 [32m+[m
+ gradle.properties                          |   4 [32m+[m
+ settings.gradle.kts                        |  16 [32m+[m
+ 18 files changed, 810 insertions(+)

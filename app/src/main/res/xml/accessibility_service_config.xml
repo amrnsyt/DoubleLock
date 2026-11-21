@@ -4,4 +4,7 @@
     android:accessibilityFeedbackType="feedbackGeneric"
     android:canRetrieveWindowContent="false"
     android:description="@string/a11y_description"
-    android:notificationTimeout="100" />
+    android:notificationTimeout="100"
+    android:packageNames="com.amrnsyt.doublelock"
+    android:settingsActivity="com.amrnsyt.doublelock.MainActivity"
+    android:summary="@string/a11y_summary" />

@@ -1,6 +1,5 @@
 package com.amrnsyt.doublelock
 
-import android.app.admin.DevicePolicyManager
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
@@ -21,14 +20,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         setContent {
             DoubleLockTheme {
                 val ui by vm.uiState.collectAsStateWithLifecycle()
-
                 when (val state = ui) {
                     UiState.Loading -> Unit
-
                     is UiState.Success -> SettingsScreen(
                         state = state,
                         onToggle = vm::setEnabled,
@@ -36,7 +32,6 @@ class MainActivity : ComponentActivity() {
                         onAnimation = vm::setAnimation,
                         onDuration = vm::setDurationMs,
                         onOpenAccessibility = ::openAccessibilitySettings,
-                        onActivateDeviceAdmin = ::activateDeviceAdmin,
                         onAddWidget = ::requestPinWidget
                     )
                 }
@@ -44,42 +39,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        vm.refreshAdminStatus()
-    }
-
     private fun openAccessibilitySettings() {
         startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
     }
 
-    private fun activateDeviceAdmin() {
-        if (DeviceAdminManager.isActive(this)) {
-            Toast.makeText(
-                this,
-                "Device Administrator is already active",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-
-        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
-            putExtra(
-                DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                ComponentName(this@MainActivity, DoubleLockDeviceAdminReceiver::class.java)
-            )
-            putExtra(
-                DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                "DoubleLock uses this permission only to lock your phone screen when you double-tap its widget."
-            )
-        }
-
-        startActivity(intent)
-    }
-
     private fun requestPinWidget() {
         val manager = AppWidgetManager.getInstance(this)
-
         if (manager.isRequestPinAppWidgetSupported) {
             manager.requestPinAppWidget(
                 ComponentName(this, LockWidgetProvider::class.java),
